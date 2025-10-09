@@ -1,0 +1,10 @@
+﻿<Solution>
+  <Project Path="AYellowpaper.SerializedCollections.csproj" />
+  <Project Path="Assembly-CSharp.csproj" />
+  <Project Path="Ink-Libraries.csproj" />
+  <Project Path="UnityExtensionMethods.csproj" />
+  <Project Path="InkEditor.csproj" />
+  <Project Path="Assembly-CSharp-firstpass.csproj" />
+  <Project Path="AYellowpaper.SerializedCollections.Editor.csproj" />
+  <Project Path="Assembly-CSharp-Editor.csproj" />
+</Solution>
