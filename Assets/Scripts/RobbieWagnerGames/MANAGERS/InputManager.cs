@@ -81,6 +81,14 @@ namespace RobbieWagnerGames.Managers
             {
                 actionMap.Enable();
                 currentActiveMap = mapName;
+                // If enabling EXPLORATION, lock and center the cursor
+                if (mapName == ActionMapName.EXPLORATION)
+                {
+                    Cursor.lockState = CursorLockMode.Locked;
+                    Cursor.visible = false;
+                    // Move cursor to center (works in editor, not always in build)
+                    Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
+                }
             }
             else
             {
@@ -100,6 +108,12 @@ namespace RobbieWagnerGames.Managers
                 {
                     currentActiveMap = default;
                 }
+                // If disabling EXPLORATION, unlock and show the cursor
+                if (mapName == ActionMapName.EXPLORATION)
+                {
+                    Cursor.lockState = CursorLockMode.None;
+                    Cursor.visible = true;
+                }
             }
             else
             {
@@ -112,9 +126,15 @@ namespace RobbieWagnerGames.Managers
         /// </summary>
         public void DisableAllActionMaps()
         {
-            foreach (var map in actionMaps.Values)
+            foreach (var mapPair in actionMaps)
             {
-                map.Disable();
+                mapPair.Value.Disable();
+                // If disabling EXPLORATION, unlock and show the cursor
+                if (mapPair.Key == ActionMapName.EXPLORATION)
+                {
+                    Cursor.lockState = CursorLockMode.None;
+                    Cursor.visible = true;
+                }
             }
             currentActiveMap = default;
         }

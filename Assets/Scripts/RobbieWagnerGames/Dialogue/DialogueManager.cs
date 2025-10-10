@@ -52,6 +52,7 @@ namespace RobbieWagnerGames.Dialogue
         private bool skipSentenceTyping = false;
         private bool currentSpeakerIsLeft = true;
         private bool canContinueDialogue = false;
+        private bool runningDialogue = false;
 
         private const string PlayerNameKey = "name";
         private const string DefaultPlayerName = "Morgan";
@@ -70,10 +71,7 @@ namespace RobbieWagnerGames.Dialogue
 
         private void OnDisable()
         {
-            if (InputManager.Instance != null)
-            {
-                InputManager.Instance.Controls.DIALOGUE.Select.performed -= OnNextLineInput;
-            }
+            InputManager.Instance.Controls.DIALOGUE.Select.performed -= OnNextLineInput;
         }
 
         #region Initialization
@@ -103,8 +101,22 @@ namespace RobbieWagnerGames.Dialogue
             currentDialogueCoroutine = StartCoroutine(StartDialogueCo(story));
         }
 
-        public IEnumerator StartDialogueCo(Story story)
+        public IEnumerator StartDialogueCo(TextAsset inkJSONAsset)
         {
+            if (inkJSONAsset == null)
+            {
+                Debug.LogWarning("Ink JSON Asset is null. Cannot start dialogue.");
+                yield break;
+            }
+
+            Story story = new Story(inkJSONAsset.text);
+            runningDialogue = true;
+            yield return StartDialogueCo(story);
+        }
+
+        public IEnumerator StartDialogueCo(Story story)
+        {   
+            InputManager.Instance.EnableActionMap(ActionMapName.DIALOGUE, false);
             currentStory = story;
             dialogueCanvas.enabled = true;
             currentSpeakerIsLeft = true;
@@ -114,7 +126,7 @@ namespace RobbieWagnerGames.Dialogue
 
             yield return ProcessNextDialogueLine();
 
-            while (currentDialogueCoroutine != null)
+            while (currentDialogueCoroutine != null || runningDialogue)
             {
                 yield return null;
             }
@@ -127,6 +139,8 @@ namespace RobbieWagnerGames.Dialogue
             dialogueCanvas.enabled = false;
             currentDialogueCoroutine = null;
             currentStory = null;
+            runningDialogue = false;
+            InputManager.Instance.DisableActionMap(ActionMapName.DIALOGUE);
         }
         #endregion
 
@@ -151,6 +165,7 @@ namespace RobbieWagnerGames.Dialogue
                 isTypingSentence = false;
                 skipSentenceTyping = false;
                 canContinueDialogue = true;
+                DisplayDialogueChoices();
             }
             else
             {

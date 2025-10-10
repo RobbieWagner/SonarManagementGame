@@ -1,6 +1,7 @@
 using UnityEngine;
 using RobbieWagnerGames.Utilities;
 using RobbieWagnerGames.FirstPerson.Interaction;
+using UnityEngine.InputSystem;
 
 namespace RobbieWagnerGames.FirstPerson
 {
@@ -69,11 +70,11 @@ namespace RobbieWagnerGames.FirstPerson
             }
         }
 
-        private void OnInteractPerformed(UnityEngine.InputSystem.InputAction.CallbackContext context)
+        private void OnInteractPerformed(InputAction.CallbackContext context)
         {
             if (currentInteractable != null)
             {
-                currentInteractable.Interact();
+                StartCoroutine(currentInteractable.Interact());
             }
         }
 

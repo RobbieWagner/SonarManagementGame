@@ -1,3 +1,5 @@
+using System.Collections;
+using RobbieWagnerGames.Managers;
 using UnityEngine;
 
 namespace RobbieWagnerGames.FirstPerson.Interaction
@@ -21,9 +23,9 @@ namespace RobbieWagnerGames.FirstPerson.Interaction
             // Debug.Log($"Cursor exited {gameObject.name}");
         }
 
-        public virtual void Interact()
+        public virtual IEnumerator Interact()
         {
-            //Debug.Log($"Interacted with {gameObject.name}");
+            yield return null;
         }
     }
 }
