@@ -28,10 +28,11 @@ namespace RobbieWagnerGames.Managers
         
         private GameControls gameControls;
         public readonly Dictionary<ActionMapName, InputActionMap> actionMaps = new Dictionary<ActionMapName, InputActionMap>();
-        private ActionMapName currentActiveMap;
+        private List<ActionMapName> currentActiveMaps = new List<ActionMapName>();
+        private List<ActionMapName> reservedMaps = new List<ActionMapName>(); // For when maps need to be disabled temporarily
 
         public GameControls Controls => gameControls;
-        public ActionMapName CurrentActiveMap => currentActiveMap;
+        public List<ActionMapName> CurrentActiveMap => currentActiveMaps;
 
         protected override void Awake()
         {
@@ -77,10 +78,10 @@ namespace RobbieWagnerGames.Managers
                 DisableAllActionMaps();
             }
 
-            if (actionMaps.TryGetValue(mapName, out var actionMap))
+            if (actionMaps.TryGetValue(mapName, out var actionMap) && !currentActiveMaps.Contains(mapName))
             {
                 actionMap.Enable();
-                currentActiveMap = mapName;
+                currentActiveMaps.Add(mapName);
                 // If enabling EXPLORATION, lock and center the cursor
                 if (mapName == ActionMapName.EXPLORATION)
                 {
@@ -104,9 +105,9 @@ namespace RobbieWagnerGames.Managers
             if (actionMaps.TryGetValue(mapName, out var actionMap))
             {
                 actionMap.Disable();
-                if (currentActiveMap == mapName)
+                if (currentActiveMaps.Contains(mapName))
                 {
-                    currentActiveMap = default;
+                    currentActiveMaps.Remove(mapName);
                 }
                 // If disabling EXPLORATION, unlock and show the cursor
                 if (mapName == ActionMapName.EXPLORATION)
@@ -129,6 +130,10 @@ namespace RobbieWagnerGames.Managers
             foreach (var mapPair in actionMaps)
             {
                 mapPair.Value.Disable();
+                if (currentActiveMaps.Contains(mapPair.Key))
+                {
+                    currentActiveMaps.Remove(mapPair.Key);
+                }
                 // If disabling EXPLORATION, unlock and show the cursor
                 if (mapPair.Key == ActionMapName.EXPLORATION)
                 {
@@ -136,7 +141,28 @@ namespace RobbieWagnerGames.Managers
                     Cursor.visible = true;
                 }
             }
-            currentActiveMap = default;
+        }
+        
+        /// <summary>
+        /// Saves the currently active action maps into reservedMaps and disables all action maps.
+        /// </summary>
+        public void SaveAndDisableCurrentActionMaps()
+        {
+            reservedMaps.Clear();
+            reservedMaps.AddRange(currentActiveMaps);
+            DisableAllActionMaps();
+        }
+
+        /// <summary>
+        /// Restores the action maps saved in reservedMaps and clears the reservedMaps list.
+        /// </summary>
+        public void RestoreReservedActionMaps()
+        {
+            foreach (var map in reservedMaps)
+            {
+                EnableActionMap(map, false); // Don't disable others, just enable each
+            }
+            reservedMaps.Clear();
         }
 
         /// <summary>
