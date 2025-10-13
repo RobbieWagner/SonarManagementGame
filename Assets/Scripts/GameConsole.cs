@@ -1,4 +1,5 @@
 using System.Collections;
+using RobbieWagnerGames.FirstPerson;
 using UnityEngine;
 
 public class GameConsole: MonoBehaviour
@@ -7,8 +8,13 @@ public class GameConsole: MonoBehaviour
     [SerializeField] private GameObject defaultSelectedObject;
     private IEnumerator interactionCoroutine;
 
+    [SerializeField] private Transform playerPositionTransform;
+
     public virtual IEnumerator BeginUse()
     {
+        StartCoroutine(FirstPersonMovement.Instance.RotateToWorldOrientationCo(playerPositionTransform.rotation, .4f));
+        yield return StartCoroutine(FirstPersonMovement.Instance.MoveToWorldPositionCo(playerPositionTransform.position, .8f));
+
         if (canvas != null)
         {
             canvas.enabled = true;

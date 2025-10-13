@@ -1,6 +1,9 @@
+using System.Collections;
 using RobbieWagnerGames.Managers;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using DG.Tweening;
+using RobbieWagnerGames.Utilities;
 
 namespace RobbieWagnerGames.FirstPerson
 {
@@ -8,7 +11,7 @@ namespace RobbieWagnerGames.FirstPerson
     /// Handles first-person character movement with ground detection
     /// </summary>
     [RequireComponent(typeof(CharacterController))]
-    public class FirstPersonMovement : MonoBehaviour
+    public class FirstPersonMovement : MonoBehaviourSingleton<FirstPersonMovement>
     {
         [Header("Movement Settings")]
         [SerializeField] private float walkSpeed = 5f;
@@ -57,8 +60,9 @@ namespace RobbieWagnerGames.FirstPerson
         public delegate void MovementStateChanged(bool canMove);
         public event MovementStateChanged onMovementStateChanged;
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             characterController = GetComponent<CharacterController>();
             SetupInput();
         }
@@ -166,8 +170,10 @@ namespace RobbieWagnerGames.FirstPerson
             }
         }
 
-        private void OnDestroy()
+        protected override void OnDestroy()
         {
+            base.OnDestroy();
+            
             if (moveAction != null)
             {
                 moveAction.performed -= OnMovePerformed;
@@ -180,6 +186,53 @@ namespace RobbieWagnerGames.FirstPerson
             Gizmos.color = Color.green;
             Vector3 rayOrigin = transform.position + Vector3.up * 0.01f;
             Gizmos.DrawLine(rayOrigin, rayOrigin + Vector3.down * groundCheckDistance);
+        }
+
+        /// <summary>
+        /// Smoothly moves the player to a specific world position using DoTween.
+        /// </summary>
+        /// <param name="targetPosition">The world position to move to.</param>
+        /// <param name="duration">The duration of the move in seconds.</param>
+        /// <param name="restoreMovement">Whether to restore movement after rotation.</param>
+        public IEnumerator MoveToWorldPositionCo(Vector3 targetPosition, float duration, bool restoreMovement = false)
+        {
+            CanMove = false;
+            characterController.enabled = false;
+
+            // Use DoTween to animate the transform's position
+            yield return transform.DOMove(targetPosition, duration).SetEase(Ease.InOutSine).WaitForCompletion();
+
+            // Ensure final position is set
+            transform.position = targetPosition;
+
+            if (restoreMovement)
+            {
+                CanMove = true;
+                characterController.enabled = true;
+            }
+        }
+
+        /// <summary>
+        /// Smoothly rotates the player to a specific world orientation using DoTween.
+        /// </summary>
+        /// <param name="targetRotation">The world rotation to rotate to.</param>
+        /// <param name="duration">The duration of the rotation in seconds.</param>
+        /// <param name="restoreMovement">Whether to restore movement after rotation.</param>
+        public IEnumerator RotateToWorldOrientationCo(Quaternion targetRotation, float duration, bool restoreMovement = false)
+        {
+            CanMove = false;
+
+            // Use DoTween to animate the transform's rotation
+            yield return transform.DORotateQuaternion(targetRotation, duration).SetEase(Ease.InOutSine).WaitForCompletion();
+
+            // Ensure final rotation is set
+            transform.rotation = targetRotation;
+
+            if (restoreMovement)
+            {
+                CanMove = true;
+                characterController.enabled = true;
+            }
         }
     }
 }
