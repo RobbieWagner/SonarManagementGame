@@ -211,28 +211,5 @@ namespace RobbieWagnerGames.FirstPerson
                 characterController.enabled = true;
             }
         }
-
-        /// <summary>
-        /// Smoothly rotates the player to a specific world orientation using DoTween.
-        /// </summary>
-        /// <param name="targetRotation">The world rotation to rotate to.</param>
-        /// <param name="duration">The duration of the rotation in seconds.</param>
-        /// <param name="restoreMovement">Whether to restore movement after rotation.</param>
-        public IEnumerator RotateToWorldOrientationCo(Quaternion targetRotation, float duration, bool restoreMovement = false)
-        {
-            CanMove = false;
-
-            // Use DoTween to animate the transform's rotation
-            yield return transform.DORotateQuaternion(targetRotation, duration).SetEase(Ease.InOutSine).WaitForCompletion();
-
-            // Ensure final rotation is set
-            transform.rotation = targetRotation;
-
-            if (restoreMovement)
-            {
-                CanMove = true;
-                characterController.enabled = true;
-            }
-        }
     }
 }

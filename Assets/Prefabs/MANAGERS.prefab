@@ -870,6 +870,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   disableAllOnStart: 0
+  currentActiveMaps: 
+  defaultActionMaps: 00000000
 --- !u!1 &5732936904297667072
 GameObject:
   m_ObjectHideFlags: 0

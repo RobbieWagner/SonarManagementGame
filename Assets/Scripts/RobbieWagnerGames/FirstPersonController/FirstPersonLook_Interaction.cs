@@ -13,8 +13,9 @@ namespace RobbieWagnerGames.FirstPerson
         [HideInInspector] public bool canInteract = true;
         public bool enableInteractionByDefault = true;
         private Interactable _currentInteractable = null;
-        public delegate void InteractableChanged(Interactable newInteractable);
-        public event InteractableChanged OnCurrentInteractableChanged;
+        public delegate void InteractableDelegate(Interactable newInteractable);
+        public event InteractableDelegate OnCurrentInteractableChanged;
+        public event InteractableDelegate OnCurrentInteractableUnchanged;
 
         private Interactable currentInteractable
         {
@@ -52,6 +53,7 @@ namespace RobbieWagnerGames.FirstPerson
                 else if (currentInteractable == hitInteractable)
                 {
                     hitInteractable.OnCursorStay();
+                    OnCurrentInteractableUnchanged?.Invoke(currentInteractable);
                 }
                 else
                 {
@@ -90,8 +92,15 @@ namespace RobbieWagnerGames.FirstPerson
                 InteractionUIManager.Instance.UpdateCursor(sprite);
                 InteractionUIManager.Instance.EnableCursor();
             }
+        }
+
+        private void HandleCurrentInteractableUnchanged(Interactable unchangedInteractable)
+        {
+            if (unchangedInteractable == null) return;
             
-            
+            Sprite sprite = unchangedInteractable.cursorOverSprite;
+            InteractionUIManager.Instance.UpdateCursor(sprite);
+            InteractionUIManager.Instance.EnableCursor();
         }
     }
 }

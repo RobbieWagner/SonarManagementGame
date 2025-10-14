@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using RobbieWagnerGames.Utilities;
+using System.Linq;
 
 namespace RobbieWagnerGames.Managers
 {
@@ -28,16 +29,29 @@ namespace RobbieWagnerGames.Managers
         
         private GameControls gameControls;
         public readonly Dictionary<ActionMapName, InputActionMap> actionMaps = new Dictionary<ActionMapName, InputActionMap>();
-        private List<ActionMapName> currentActiveMaps = new List<ActionMapName>();
+        [SerializeField] private List<ActionMapName> currentActiveMaps = new List<ActionMapName>();
         private List<ActionMapName> reservedMaps = new List<ActionMapName>(); // For when maps need to be disabled temporarily
 
         public GameControls Controls => gameControls;
-        public List<ActionMapName> CurrentActiveMap => currentActiveMaps;
+        public List<ActionMapName> CurrentActiveMaps => currentActiveMaps;
+
+        public delegate void OnActionMapsUpdated(List<ActionMapName> activeMaps);
+        public event OnActionMapsUpdated onActionMapsUpdated;
+
+        [SerializeField] private List<ActionMapName> defaultActionMaps = new List<ActionMapName>();
 
         protected override void Awake()
         {
             base.Awake();
             InitializeInputSystem();
+
+            if(defaultActionMaps.Any())
+            {
+                foreach(var map in defaultActionMaps)
+                {
+                    EnableActionMap(map, false); // Don't disable others, just enable each
+                }
+            }
         }
 
         private void InitializeInputSystem()
@@ -95,6 +109,8 @@ namespace RobbieWagnerGames.Managers
             {
                 Debug.LogWarning($"Could not enable action map {mapName}: not found", this);
             }
+
+            onActionMapsUpdated?.Invoke(currentActiveMaps);
         }
 
         /// <summary>
@@ -120,6 +136,8 @@ namespace RobbieWagnerGames.Managers
             {
                 Debug.LogWarning($"Could not disable action map {mapName}: not found", this);
             }
+
+            onActionMapsUpdated?.Invoke(currentActiveMaps);
         }
 
         /// <summary>
@@ -141,6 +159,8 @@ namespace RobbieWagnerGames.Managers
                     Cursor.visible = true;
                 }
             }
+
+            onActionMapsUpdated?.Invoke(currentActiveMaps);
         }
         
         /// <summary>

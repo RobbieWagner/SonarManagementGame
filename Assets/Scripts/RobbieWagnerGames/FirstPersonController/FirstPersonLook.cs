@@ -1,3 +1,5 @@
+using System.Collections;
+using DG.Tweening;
 using RobbieWagnerGames.Managers;
 using RobbieWagnerGames.Utilities;
 using UnityEngine;
@@ -52,6 +54,7 @@ namespace RobbieWagnerGames.FirstPerson
             SetupInput();
             SetupInteraction();
             OnCurrentInteractableChanged += HandleCurrentInteractableChanged;
+            OnCurrentInteractableUnchanged += HandleCurrentInteractableUnchanged;
         }
 
         private void Update()
@@ -141,6 +144,22 @@ namespace RobbieWagnerGames.FirstPerson
             if (interactAction != null)
             {
                 interactAction.performed -= OnInteractPerformed;
+            }
+        }
+
+        public IEnumerator RotateToWorldOrientationCo(Quaternion targetRotation, float duration, bool restoreMovement = false)
+        {
+            canLook = false;
+
+           // Use DoTween to animate the transform's rotation
+            yield return playerCamera.transform.DORotateQuaternion(targetRotation, duration).SetEase(Ease.InOutSine).WaitForCompletion();
+
+            // Ensure final rotation is set
+            transform.rotation = targetRotation;
+
+            if (restoreMovement)
+            {
+                canLook = true;
             }
         }
     }
