@@ -3,12 +3,15 @@ using System.Collections;
 using RobbieWagnerGames.FirstPerson.Interaction;
 using UnityEngine;
 
-public class ConsoleInteractable : Interactable
+namespace RobbieWagnerGames.MultiFactorGame
 {
-    [SerializeField] private GameConsole console;
-
-    public override IEnumerator Interact()
+    public class ConsoleInteractable : Interactable
     {
-        yield return StartCoroutine(console.BeginUse());
+        [SerializeField] private GameConsole console;
+
+        public override IEnumerator Interact()
+        {
+            yield return StartCoroutine(console.BeginUse());
+        }
     }
 }
