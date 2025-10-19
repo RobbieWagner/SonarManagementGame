@@ -15,6 +15,13 @@ namespace RobbieWagnerGames.MultiFactorGame
             StartCoroutine(WaitAndComplete());
         }
 
+
+        public override void ContinueStep()
+        {
+            base.ContinueStep();
+            StartCoroutine(WaitAndComplete());
+        }
+
         private IEnumerator WaitAndComplete()
         {
             int timeWaited = 0;

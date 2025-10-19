@@ -7,7 +7,8 @@ namespace RobbieWagnerGames.MultiFactorGame
     {
         public override IEnumerator UseConsole()
         {
-            yield return null;
+            yield return base.UseConsole();
+            AuthenticationManager.Instance.RunAuthentication();
         }
     }
 }

@@ -17,7 +17,6 @@ namespace RobbieWagnerGames.MultiFactorGame
                 return;
             }
 
-            currentStepIndex = 0;
             RunCurrentStep();
         }
 
@@ -27,7 +26,7 @@ namespace RobbieWagnerGames.MultiFactorGame
             {
                 AuthenticationStep currentStep = authenticationSteps[currentStepIndex];
                 currentStep.onStepCompleted += OnCurrentStepCompleted;
-                currentStep.StartStep();
+                currentStep.LoadStep();
             }
             else
             {

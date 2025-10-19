@@ -149,13 +149,46 @@ namespace RobbieWagnerGames.FirstPerson
 
         public IEnumerator RotateToWorldOrientationCo(Quaternion targetRotation, float duration, bool restoreMovement = false)
         {
+            // Disable look control while tweening
             canLook = false;
 
-           // Use DoTween to animate the transform's rotation
-            yield return playerCamera.transform.DORotateQuaternion(targetRotation, duration).SetEase(Ease.InOutSine).WaitForCompletion();
+            // Calculate target pitch (x) and yaw (y) from the target rotation in world space
+            Vector3 targetEuler = targetRotation.eulerAngles;
+            float targetYaw = targetEuler.y;
+            float targetPitch = targetEuler.x;
+            float startYaw = playerBody.eulerAngles.y;
+            float startPitch = transform.localEulerAngles.x;
 
-            // Ensure final rotation is set
-            transform.rotation = targetRotation;
+            startYaw = Mathf.DeltaAngle(0f, startYaw);
+            startPitch = Mathf.DeltaAngle(0f, startPitch);
+            targetYaw = Mathf.DeltaAngle(0f, targetYaw);
+            targetPitch = Mathf.DeltaAngle(0f, targetPitch);
+
+            // Tween yaw (player body) and pitch (camera) using a DOTween Sequence so they run together
+            var seq = DOTween.Sequence();
+            seq.Join(DOTween.To(() => startYaw, val =>
+            {
+                float newYaw = val;
+                playerBody.eulerAngles = new Vector3(playerBody.eulerAngles.x, newYaw, playerBody.eulerAngles.z);
+            }, targetYaw, duration).SetEase(Ease.InOutSine));
+
+            seq.Join(DOTween.To(() => startPitch, val =>
+            {
+                float newPitch = val;
+                // Apply pitch to this transform's local rotation
+                transform.localEulerAngles = new Vector3(newPitch, 0f, 0f);
+            }, targetPitch, duration).SetEase(Ease.InOutSine));
+
+            // Start and wait for completion
+            yield return seq.Play().WaitForCompletion();
+
+            // Ensure final rotations are exact
+            playerBody.eulerAngles = new Vector3(playerBody.eulerAngles.x, targetEuler.y, playerBody.eulerAngles.z);
+            transform.localEulerAngles = new Vector3(targetEuler.x, 0f, 0f);
+
+            // Update internal look state to match the new camera pitch to prevent jitter
+            xRotation = Mathf.Clamp(targetEuler.x, minVerticalAngle, maxVerticalAngle);
+            currentLookInput = Vector2.zero;
 
             if (restoreMovement)
             {
