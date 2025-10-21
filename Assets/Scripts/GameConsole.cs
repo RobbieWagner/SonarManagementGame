@@ -26,13 +26,16 @@ namespace RobbieWagnerGames.MultiFactorGame
             idleScreen.SetActive(true);
             activeScreen.SetActive(false);
 
-            closeConsoleButton.onClick.AddListener(() =>
+            if (closeConsoleButton != null)
             {
-                if (interactionCoroutine != null)
+                closeConsoleButton.onClick.AddListener(() =>
                 {
-                    StopUsingConsole();
-                }
-            });
+                    if (interactionCoroutine != null)
+                    {
+                        StopUsingConsole();
+                    }
+                });
+            }
 
             InputManager.Instance.GetAction(ActionMapName.UI, "Cancel").performed += StopUsingConsole;
         }

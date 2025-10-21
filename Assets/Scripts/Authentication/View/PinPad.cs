@@ -18,10 +18,9 @@ namespace RobbieWagnerGames.MultiFactorGame
         [SerializeField] private TextMeshProUGUI displayText;
 
         [SerializeField] private int requiredLength = 4;
+        [SerializeField] private Button clearButton;
 
         private UnityAction[] numberActions;
-
-    // (No UnityEvent backwards-compatibility; use SubmitInput on AuthenticationScreen)
 
         private void Reset()
         {
@@ -59,6 +58,8 @@ namespace RobbieWagnerGames.MultiFactorGame
                 numberActions[i] = act;
                 btn.onClick.AddListener(act);
             }
+
+            if (clearButton != null) clearButton.onClick.AddListener(Clear);
         }
 
         public void UnwireButtons()
@@ -99,7 +100,9 @@ namespace RobbieWagnerGames.MultiFactorGame
         private void UpdateDisplay()
         {
             if (displayText == null) return;
-            displayText.text = userInput;
+            int remaining = Mathf.Max(0, requiredLength - userInput.Length);
+            string underscores = new string('_', remaining);
+            displayText.text = userInput + underscores;
         }
     }
 }

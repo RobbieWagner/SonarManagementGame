@@ -25,6 +25,7 @@ namespace RobbieWagnerGames.MultiFactorGame
             if (currentStepIndex < authenticationSteps.Length)
             {
                 AuthenticationStep currentStep = authenticationSteps[currentStepIndex];
+                currentStep.onStepCompleted -= OnCurrentStepCompleted;
                 currentStep.onStepCompleted += OnCurrentStepCompleted;
                 currentStep.LoadStep();
             }
