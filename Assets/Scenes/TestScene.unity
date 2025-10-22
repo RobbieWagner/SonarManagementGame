@@ -759,6 +759,34 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 195781162436567430, guid: 80505dd8bc628694aabb27abf6d89a1f, type: 3}
+      propertyPath: stepUI
+      value: 
+      objectReference: {fileID: 5531991856796058452}
+    - target: {fileID: 195781162436567430, guid: 80505dd8bc628694aabb27abf6d89a1f, type: 3}
+      propertyPath: countdownText
+      value: 
+      objectReference: {fileID: 5531991856796058451}
+    - target: {fileID: 195781162436567430, guid: 80505dd8bc628694aabb27abf6d89a1f, type: 3}
+      propertyPath: authenticationScreen
+      value: 
+      objectReference: {fileID: 5531991856796058453}
+    - target: {fileID: 195781162436567430, guid: 80505dd8bc628694aabb27abf6d89a1f, type: 3}
+      propertyPath: defaultSelectedObject
+      value: 
+      objectReference: {fileID: 5531991856796058450}
+    - target: {fileID: 2441829622806966001, guid: 80505dd8bc628694aabb27abf6d89a1f, type: 3}
+      propertyPath: stepUI
+      value: 
+      objectReference: {fileID: 5531991856796058448}
+    - target: {fileID: 2441829622806966001, guid: 80505dd8bc628694aabb27abf6d89a1f, type: 3}
+      propertyPath: authenticationScreen
+      value: 
+      objectReference: {fileID: 5531991856796058449}
+    - target: {fileID: 2441829622806966001, guid: 80505dd8bc628694aabb27abf6d89a1f, type: 3}
+      propertyPath: defaultSelectedObject
+      value: 
+      objectReference: {fileID: 5531991856796058450}
     - target: {fileID: 3909400119243613445, guid: 80505dd8bc628694aabb27abf6d89a1f, type: 3}
       propertyPath: m_Enabled
       value: 0
